@@ -1,0 +1,169 @@
+{
+  "version": "v006",
+  "created_at": "2026-10-01T17:41:17.289469+00:00",
+  "classes": [
+    "alternator",
+    "brake_disc",
+    "headlight_left",
+    "headlight_right",
+    "side_mirror_left",
+    "side_mirror_right",
+    "taillight_left",
+    "taillight_right",
+    "wheel_rim"
+  ],
+  "arch": "dinov2_vits14",
+  "image_size": 224,
+  "temperature": 0.7099741697311401,
+  "unknown_similarity": 0.4164526164531708,
+  "ood_k": 5,
+  "train_config": {
+    "arch": "dinov2_vits14",
+    "pretrained": true,
+    "image_size": 224,
+    "batch_size": 32,
+    "epochs": 12,
+    "head_epochs": 2,
+    "lr": 0.001,
+    "backbone_lr_mult": 0.1,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "patience": 4,
+    "val_fraction": 0.15,
+    "seed": 42,
+    "num_workers": 0
+  },
+  "n_train": 737,
+  "n_val": 130,
+  "train_hash": "4d693c6163d7",
+  "holdout_hash": "3823933a1513",
+  "history": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "train_loss": 1.8646,
+      "val_loss": 1.2154,
+      "top1": 0.5154,
+      "top3": 0.8769
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "train_loss": 1.3394,
+      "val_loss": 1.089,
+      "top1": 0.5462,
+      "top3": 0.8846
+    },
+    {
+      "epoch": 3,
+      "stage": "full",
+      "train_loss": 2.8029,
+      "val_loss": 2.2489,
+      "top1": 0.0692,
+      "top3": 0.2923
+    },
+    {
+      "epoch": 4,
+      "stage": "full",
+      "train_loss": 2.3102,
+      "val_loss": 2.177,
+      "top1": 0.2154,
+      "top3": 0.4
+    },
+    {
+      "epoch": 5,
+      "stage": "full",
+      "train_loss": 2.2645,
+      "val_loss": 2.0809,
+      "top1": 0.2154,
+      "top3": 0.5231
+    },
+    {
+      "epoch": 6,
+      "stage": "full",
+      "train_loss": 2.1668,
+      "val_loss": 2.0311,
+      "top1": 0.2308,
+      "top3": 0.5077
+    }
+  ],
+  "holdout": {
+    "n": 360,
+    "top1": 0.6027777791023254,
+    "top3": 0.9111111164093018,
+    "ece": 0.07025325298309326,
+    "ece_uncalibrated": 0.05677253007888794,
+    "per_class": {
+      "alternator": 0.949999988079071,
+      "brake_disc": 0.9750000238418579,
+      "headlight_left": 0.42500001192092896,
+      "headlight_right": 0.375,
+      "side_mirror_left": 0.17499999701976776,
+      "side_mirror_right": 0.6000000238418579,
+      "taillight_left": 0.5249999761581421,
+      "taillight_right": 0.4749999940395355,
+      "wheel_rim": 0.925000011920929
+    },
+    "top_confusions": [
+      {
+        "true": "side_mirror_left",
+        "predicted": "side_mirror_right",
+        "count": 26
+      },
+      {
+        "true": "taillight_right",
+        "predicted": "taillight_left",
+        "count": 21
+      },
+      {
+        "true": "taillight_left",
+        "predicted": "taillight_right",
+        "count": 19
+      },
+      {
+        "true": "headlight_left",
+        "predicted": "headlight_right",
+        "count": 16
+      },
+      {
+        "true": "headlight_right",
+        "predicted": "headlight_left",
+        "count": 14
+      }
+    ],
+    "risk_coverage": [
+      {
+        "threshold": 0.0,
+        "coverage": 1.0,
+        "accuracy": 0.6027777791023254
+      },
+      {
+        "threshold": 0.4,
+        "coverage": 0.8722222447395325,
+        "accuracy": 0.6433120965957642
+      },
+      {
+        "threshold": 0.6,
+        "coverage": 0.5611110925674438,
+        "accuracy": 0.7673267126083374
+      },
+      {
+        "threshold": 0.8,
+        "coverage": 0.3055555522441864,
+        "accuracy": 0.9272727370262146
+      },
+      {
+        "threshold": 0.9,
+        "coverage": 0.22777777910232544,
+        "accuracy": 0.9756097793579102
+      },
+      {
+        "threshold": 0.95,
+        "coverage": 0.18333333730697632,
+        "accuracy": 1.0
+      }
+    ]
+  },
+  "notes": "kaggle compare dinov2_vits14@224",
+  "warm_start_from": null
+}

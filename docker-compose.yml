@@ -1,0 +1,47 @@
+# Production: app + Caddy (automatic HTTPS). See "Deploy" in README.md.
+#   cp .env.example .env   # set DOMAIN and PARTVISION_PASSWORD
+#   docker compose up -d --build
+services:
+  app:
+    build: .
+    image: partvision:latest
+    restart: unless-stopped
+    environment:
+      PARTVISION_USER: ${PARTVISION_USER:-admin}
+      # refuse to start without a password: the app would otherwise be open to the internet
+      PARTVISION_PASSWORD: ${PARTVISION_PASSWORD:?set PARTVISION_PASSWORD in .env}
+    volumes:
+      - ./models:/app/models
+      - ./data:/app/data
+    expose:
+      - "8000"
+    # only Caddy talks to the app; X-Forwarded-* from it are trusted for client IPs in logs
+    command: ["uvicorn", "partvision.api:app", "--host", "0.0.0.0", "--port", "8000",
+              "--proxy-headers", "--forwarded-allow-ips", "*"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data          # TLS certificates; keep across restarts to avoid rate limits
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:

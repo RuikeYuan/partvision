@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/uploads/
+data/stream/
+data/partvision.db*
+data/manifests/
+build/
+.env
+data/kaggle_runs/
+data/partvision.db.snapshot
+# weights over GitHub's 100 MB limit live in the HF model repo; v002 (22 MB) stays for the quick start
+models/*/model.pt
+!models/v002/model.pt
+models/*/index_extra.npz
+# personal notes, not published
+/闈㈣瘯璁茶В鎸囧崡.md

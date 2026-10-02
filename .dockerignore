@@ -1,0 +1,9 @@
+# models/ and data/ are mounted as volumes; keep them out of the build context
+models/
+data/
+build/
+tests/
+.env
+**/__pycache__/
+*.pyc
+.pytest_cache/

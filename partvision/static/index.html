@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PartVision</title>
+<style>
+  :root {
+    --bg: #f4f2ee; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e2dfd8;
+    --accent: #c4501c; --ok: #2f7d4f; --warn: #b7791f; --bad: #b3261e; --info: #3b5ba9;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: -0.01em; }
+  header h1 span { color: var(--accent); }
+  header .ver { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  nav { margin-left: auto; display: flex; gap: 4px; }
+  nav button { border: 0; background: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font: inherit; color: var(--muted); }
+  nav button.on { background: var(--ink); color: #fff; }
+  main { max-width: 1120px; margin: 0 auto; padding: 24px 16px 60px; }
+  .grid { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  .drop { display: block; border: 2px dashed var(--line); border-radius: 10px; padding: 28px 12px; text-align: center; cursor: pointer; color: var(--muted); transition: .15s; }
+  .drop.hover, .drop:hover { border-color: var(--accent); color: var(--ink); }
+  .samples { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 14px; }
+  .samples img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+  .samples img:hover { border-color: var(--accent); }
+  .result { display: grid; grid-template-columns: 220px 1fr; gap: 18px; }
+  @media (max-width: 560px) { .result { grid-template-columns: 1fr; } }
+  .result > img { width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: .04em; }
+  .auto_accept { background: var(--ok); } .confirm { background: var(--info); } .manual { background: var(--warn); } .unknown { background: var(--bad); }
+  .reason { color: var(--muted); font-size: 13px; margin: 6px 0 14px; }
+  .cand { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; font: inherit; }
+  .cand:hover { border-color: var(--ink); }
+  .cand .name { font-weight: 600; min-width: 150px; font-family: var(--mono); font-size: 13px; }
+  .bar { flex: 1; height: 8px; background: #efece6; border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .cand .pct { font-family: var(--mono); font-size: 12px; width: 48px; text-align: right; }
+  .cand small { display: block; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+  .other { display: flex; gap: 8px; margin-top: 6px; }
+  input, select { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; min-width: 0; }
+  .btn { font: inherit; border: 0; background: var(--ink); color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+  .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; }
+  .kv div { background: #f8f7f4; border-radius: 8px; padding: 8px 10px; }
+  .kv b { display: block; font-family: var(--mono); font-size: 15px; }
+  .kv span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .nb { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 12px; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 8px; opacity: 0; transition: .2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.mono { font-family: var(--mono); }
+  .queue { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+  .queue .card { padding: 10px; }
+  .queue img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+  .queue p { margin: 6px 0; font-size: 12px; font-family: var(--mono); }
+  .models td, .models th { white-space: nowrap; }
+  .models tr.cur td { background: #fbf3ee; }
+  .tag { font-size: 11px; padding: 1px 7px; border-radius: 999px; background: var(--ink); color: #fff; margin-left: 6px; }
+  .cmp { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 14px; }
+  .cmp .card { padding: 12px; }
+  .cmp .card h3 { margin: 0 0 6px; font-size: 13px; font-family: var(--mono); }
+  .cmp .top { font-weight: 600; font-family: var(--mono); font-size: 14px; margin: 8px 0 2px; }
+  .cmp .lat { color: var(--muted); font-size: 12px; font-family: var(--mono); }
+  .cmp ol { margin: 8px 0 0; padding-left: 18px; font-size: 12px; font-family: var(--mono); color: var(--muted); }
+  .agree.yes { color: var(--ok); font-weight: 600; } .agree.no { color: var(--bad); font-weight: 600; }
+  .matrix { overflow-x: auto; }
+  .matrix td { font-family: var(--mono); font-size: 12px; }
+  .hidden { display: none; }
+  .empty { color: var(--muted); padding: 30px; text-align: center; }
+  .stack > * + * { margin-top: 20px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Part<span>Vision</span></h1>
+  <span class="ver" id="ver">loading…</span>
+  <nav>
+    <button data-tab="recognise" class="on">Recognise</button>
+    <button data-tab="queue">Review queue</button>
+    <button data-tab="compare">Compare</button>
+    <button data-tab="model">Model</button>
+  </nav>
+</header>
+
+<main>
+  <section id="recognise" class="grid">
+    <div class="card">
+      <h2>Photo</h2>
+      <label class="drop" id="drop">Drop a part photo here or click to upload
+        <input type="file" id="file" accept="image/*" class="hidden">
+      </label>
+      <div class="samples" id="samples"></div>
+    </div>
+    <div class="card" id="resultCard"><div class="empty">Upload a photo to get the top-3 suggestions.</div></div>
+  </section>
+
+  <section id="queue" class="hidden">
+    <div class="card">
+      <h2>Active learning: most uncertain unlabelled predictions first</h2>
+      <div id="queueList" class="queue"></div>
+    </div>
+  </section>
+
+  <section id="compare" class="hidden stack">
+    <div class="card">
+      <h2>Registered models (tick the ones to compare)</h2>
+      <div style="overflow-x:auto"><table class="models" id="modelsTable"></table></div>
+    </div>
+    <div class="card">
+      <h2>Same photo, every model</h2>
+      <div class="other">
+        <input type="file" id="cmpFile" accept="image/*">
+        <button class="btn" id="cmpAll">Run all sample photos</button>
+      </div>
+      <div class="samples" id="cmpSamples" style="max-width:520px"></div>
+      <div id="cmpOut"></div>
+    </div>
+    <div class="card hidden" id="matrixCard"><h2>All samples × models (green ✓ = matches the filename label)</h2><div class="matrix" id="matrix"></div></div>
+  </section>
+
+  <section id="model" class="hidden stack">
+    <div class="card" id="modelCard"></div>
+    <div class="card">
+      <h2>Add a new part type without retraining</h2>
+      <div class="other">
+        <input id="refLabel" placeholder="label, e.g. door_handle_left">
+        <input id="refFiles" type="file" accept="image/*" multiple>
+        <button class="btn" id="refBtn">Add references</button>
+      </div>
+    </div>
+    <div class="card" id="statsCard"></div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const pct = x => (x * 100).toFixed(0) + "%";
+let known = [];
+
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(body.detail || r.statusText);
+  return body;
+}
+
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+  ["recognise", "queue", "compare", "model"].forEach(id => $("#" + id).classList.toggle("hidden", id !== b.dataset.tab));
+  if (b.dataset.tab === "queue") loadQueue();
+  if (b.dataset.tab === "compare") loadCompare();
+  if (b.dataset.tab === "model") loadModel();
+});
+
+async function predictBlob(blob, name) {
+  const fd = new FormData(); fd.append("file", blob, name || "photo.jpg");
+  $("#resultCard").innerHTML = '<div class="empty">Analysing…</div>';
+  try { render(await api("/api/predict", { method: "POST", body: fd })); }
+  catch (e) { $("#resultCard").innerHTML = `<div class="empty">${e.message}</div>`; }
+}
+
+function render(r) {
+  const cands = r.candidates.map(c => `
+    <button class="cand" data-label="${c.label}">
+      <span class="name">${c.label}<small>clf ${pct(c.classifier_prob)} · kNN ${pct(c.knn_vote)}</small></span>
+      <span class="bar"><i style="width:${(c.score * 100).toFixed(1)}%"></i></span>
+      <span class="pct">${pct(c.score)}</span>
+    </button>`).join("");
+  const options = known.map(k => `<option value="${k}">`).join("");
+  $("#resultCard").innerHTML = `
+    <div class="result">
+      <img src="${r.image_url}" alt="uploaded part">
+      <div>
+        <span class="badge ${r.decision}">${r.decision.replace("_", " ")}</span>
+        <div class="reason">${r.reason}</div>
+        ${cands}
+        <div class="other">
+          <input list="known" id="otherLabel" placeholder="other label…">
+          <datalist id="known">${options}</datalist>
+          <button class="btn" id="otherBtn">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="kv">
+      <div><b>${pct(r.confidence)}</b><span>calibrated conf.</span></div>
+      <div><b>${r.margin.toFixed(2)}</b><span>top1–top2 margin</span></div>
+      <div><b>${r.entropy.toFixed(2)}</b><span>norm. entropy</span></div>
+      <div><b>${r.ood_score.toFixed(2)}</b><span>known-part score</span></div>
+    </div>
+    <div class="nb">nearest photos: ${r.neighbours.map(n => `${n.label} (${n.similarity.toFixed(2)})`).join(" · ")}</div>`;
+  const send = async label => {
+    try {
+      const f = await api("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prediction_id: r.prediction_id, label }) });
+      toast(f.model_was_correct ? `✓ confirmed ${label}` : `✎ corrected to ${label}`);
+    } catch (e) { toast(e.message); }
+  };
+  document.querySelectorAll(".cand").forEach(b => b.onclick = () => send(b.dataset.label));
+  $("#otherBtn").onclick = () => { const v = $("#otherLabel").value.trim(); if (v) send(v); };
+}
+
+const drop = $("#drop");
+$("#file").onchange = e => e.target.files[0] && predictBlob(e.target.files[0], e.target.files[0].name);
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("hover"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("hover"); }));
+drop.addEventListener("drop", e => e.dataTransfer.files[0] && predictBlob(e.dataTransfer.files[0], e.dataTransfer.files[0].name));
+
+async function loadSamples() {
+  const list = await api("/api/samples").catch(() => []);
+  $("#samples").innerHTML = list.slice(0, 15).map(u => `<img src="${u}" alt="sample part">`).join("");
+  document.querySelectorAll("#samples img").forEach(img => img.onclick = async () => {
+    const blob = await (await fetch(img.src)).blob(); predictBlob(blob, img.src.split("/").pop());
+  });
+}
+
+async function loadQueue() {
+  const rows = await api("/api/review-queue?limit=40");
+  $("#queueList").innerHTML = rows.length ? rows.map(r => `
+    <div class="card"><img src="${r.image_url}" alt="queued part">
+      <p>${r.top1} · ${pct(r.confidence)}</p><p>margin ${r.margin.toFixed(2)} · ${r.decision}</p>
+      <div class="other"><input list="known2" placeholder="label" data-id="${r.id}"><button class="btn" data-id="${r.id}">✓</button></div>
+    </div>`).join("") + `<datalist id="known2">${known.map(k => `<option value="${k}">`).join("")}</datalist>`
+    : '<div class="empty">Nothing to review.</div>';
+  document.querySelectorAll("#queueList button").forEach(b => b.onclick = async () => {
+    const v = document.querySelector(`#queueList input[data-id="${b.dataset.id}"]`).value.trim();
+    if (!v) return;
+    try { await api("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prediction_id: b.dataset.id, label: v }) }); toast("saved"); loadQueue(); }
+    catch (e) { toast(e.message); }
+  });
+}
+
+async function loadModel() {
+  const m = await api("/api/model");
+  const h = m.holdout;
+  $("#modelCard").innerHTML = `
+    <h2>Model ${m.version} · ${m.arch} · ${m.classes.length} classes</h2>
+    <div class="kv">
+      <div><b>${pct(h.top1)}</b><span>holdout top-1</span></div>
+      <div><b>${pct(h.top3)}</b><span>holdout top-3</span></div>
+      <div><b>${h.ece_uncalibrated.toFixed(3)} → ${h.ece.toFixed(3)}</b><span>ECE (T=${m.temperature.toFixed(2)})</span></div>
+      <div><b>${m.unknown_similarity.toFixed(2)}</b><span>unknown threshold</span></div>
+    </div>
+    <h2 style="margin-top:18px">Risk–coverage: what if we auto-accept above t?</h2>
+    <table><tr><th>threshold</th><th>coverage (automated)</th><th>accuracy of automated</th></tr>
+      ${h.risk_coverage.map(r => `<tr><td class="mono">${r.threshold}</td><td class="mono">${pct(r.coverage)}</td><td class="mono">${r.accuracy == null ? "–" : pct(r.accuracy)}</td></tr>`).join("")}
+    </table>
+    <h2 style="margin-top:18px">Top confusions on holdout</h2>
+    ${h.top_confusions.length ? `<table><tr><th>true</th><th>predicted</th><th>count</th></tr>${h.top_confusions.map(c => `<tr><td class="mono">${c.true}</td><td class="mono">${c.predicted}</td><td class="mono">${c.count}</td></tr>`).join("")}</table>` : '<div class="empty">none</div>'}
+    <div class="nb">versions: ${m.versions.join(", ")} · known classes (incl. reference-only): ${m.known_classes.join(", ")}</div>`;
+  const s = await api("/api/stats");
+  $("#statsCard").innerHTML = `<h2>Production feedback</h2>
+    <table><tr><th>version</th><th>predictions</th><th>with feedback</th><th>online accuracy</th></tr>
+    ${s.per_version.map(v => `<tr><td class="mono">${v.version}</td><td class="mono">${v.predictions}</td><td class="mono">${v.with_feedback}</td><td class="mono">${v.online_accuracy == null ? "–" : pct(v.online_accuracy)}</td></tr>`).join("") || '<tr><td colspan="4">no predictions yet</td></tr>'}
+    </table>
+    <div class="nb">decisions: ${Object.entries(s.decisions).map(([k, v]) => `${k}=${v}`).join(" · ") || "–"} · audited auto-accepts: ${s.auto_accept_audited.n}${s.auto_accept_audited.accuracy == null ? "" : " (" + pct(s.auto_accept_audited.accuracy) + " correct)"}</div>`;
+}
+
+// ---------------------------------------------------------------- compare tab
+let sampleUrls = [];
+const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const sampleLabel = u => u.split("/").pop().replace(/_\d+\.\w+$/, "");
+const chosen = () => [...document.querySelectorAll("#modelsTable input[type=checkbox]:checked")].map(c => c.value);
+
+async function loadCompare() {
+  const models = await api("/api/models");
+  const keep = new Set(chosen());
+  const first = !document.querySelector("#modelsTable input");
+  const f = x => x == null ? "–" : x.toFixed(3);
+  $("#modelsTable").innerHTML = `<tr><th></th><th>version</th><th>architecture</th><th>input</th><th>pretrained</th><th>size</th><th>top-1</th><th>top-3</th><th>ECE</th><th>notes</th></tr>` +
+    models.map(m => `<tr class="${m.current ? "cur" : ""}">
+      <td><input type="checkbox" value="${m.version}" ${first || keep.has(m.version) ? "checked" : ""}></td>
+      <td class="mono">${m.version}${m.current ? '<span class="tag">live</span>' : ""}</td>
+      <td class="mono">${esc(m.arch)}</td><td class="mono">${m.image_size}px</td>
+      <td>${m.pretrained ? "yes" : "no"}</td><td class="mono">${m.size_mb ?? "–"} MB</td>
+      <td class="mono">${m.top1 == null ? "–" : pct(m.top1)}</td><td class="mono">${m.top3 == null ? "–" : pct(m.top3)}</td>
+      <td class="mono">${f(m.ece)}</td><td>${esc(m.notes)}</td></tr>`).join("");
+  if (!sampleUrls.length) {
+    sampleUrls = await api("/api/samples").catch(() => []);
+    $("#cmpSamples").innerHTML = sampleUrls.map(u => `<img src="${u}" alt="${esc(sampleLabel(u))}" title="${esc(sampleLabel(u))}">`).join("");
+    document.querySelectorAll("#cmpSamples img").forEach(img => img.onclick = async () =>
+      compareBlob(await (await fetch(img.src)).blob(), img.src.split("/").pop(), img.src, sampleLabel(img.src)));
+  }
+}
+
+function compareCall(blob, name, versions) {
+  const fd = new FormData(); fd.append("file", blob, name); fd.append("versions", versions.join(","));
+  return api("/api/compare", { method: "POST", body: fd });
+}
+
+async function compareBlob(blob, name, previewUrl, truth) {
+  const versions = chosen();
+  if (!versions.length) return toast("tick at least one model");
+  $("#cmpOut").innerHTML = '<div class="empty">Running every model… (first call loads each one)</div>';
+  try {
+    const rs = await compareCall(blob, name, versions);
+    const agree = new Set(rs.map(r => r.candidates[0].label)).size === 1;
+    const img = previewUrl || URL.createObjectURL(blob);
+    $("#cmpOut").innerHTML = `
+      <div style="display:flex; gap:14px; align-items:center; margin-top:14px">
+        <img src="${img}" style="width:96px; height:96px; object-fit:cover; border-radius:8px" alt="tested photo">
+        <div><span class="agree ${agree ? "yes" : "no"}">${agree ? "all models agree" : "models disagree"}</span>
+          ${truth ? `<div class="nb">filename label: ${esc(truth)}</div>` : ""}</div>
+      </div>
+      <div class="cmp">${rs.map(r => {
+        const c = r.candidates;
+        const ok = truth ? (c[0].label === truth ? "yes" : "no") : "";
+        return `<div class="card"><h3>${r.version} · ${esc(r.arch)}</h3>
+          <span class="badge ${r.decision}">${r.decision.replace("_", " ")}</span>
+          <div class="top agree ${ok}">${esc(c[0].label)} · ${pct(c[0].score)}</div>
+          <div class="lat">${r.latency_ms} ms · known-part score ${r.ood_score.toFixed(2)}</div>
+          <ol>${c.map(x => `<li>${esc(x.label)} ${pct(x.score)}</li>`).join("")}</ol></div>`;
+      }).join("")}</div>`;
+  } catch (e) { $("#cmpOut").innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
+}
+
+$("#cmpFile").onchange = e => e.target.files[0] && compareBlob(e.target.files[0], e.target.files[0].name, null, null);
+
+function matrixHtml(versions, rows, correct, done) {
+  const lat = v => rows.length ? (rows.reduce((a, r) => a + (r.byV[v]?.latency_ms || 0), 0) / rows.length).toFixed(0) : "–";
+  return `<table><tr><th>photo label</th>${versions.map(v => `<th>${v}</th>`).join("")}</tr>` +
+    rows.map(r => `<tr><td>${esc(r.truth)}</td>${versions.map(v => {
+      const c = r.byV[v]?.candidates[0]; if (!c) return "<td>–</td>";
+      return `<td class="agree ${c.label === r.truth ? "yes" : "no"}">${c.label === r.truth ? "✓" : esc(c.label)} <small>${pct(c.score)}</small></td>`;
+    }).join("")}</tr>`).join("") +
+    `<tr><th>correct${done ? "" : " so far"}</th>${versions.map(v => `<th>${correct[v]}/${rows.length}</th>`).join("")}</tr>
+     <tr><th>avg ms / photo</th>${versions.map(v => `<th>${lat(v)}</th>`).join("")}</tr></table>`;
+}
+
+$("#cmpAll").onclick = async () => {
+  const versions = chosen();
+  if (!versions.length || !sampleUrls.length) return toast("tick a model and make sure samples exist");
+  $("#matrixCard").classList.remove("hidden");
+  const correct = Object.fromEntries(versions.map(v => [v, 0]));
+  const rows = [];
+  for (const [i, u] of sampleUrls.entries()) {
+    $("#matrix").innerHTML = `<div class="empty">running ${i + 1}/${sampleUrls.length}…</div>` + matrixHtml(versions, rows, correct, false);
+    const rs = await compareCall(await (await fetch(u)).blob(), u.split("/").pop(), versions).catch(() => null);
+    if (!rs) continue;
+    const truth = sampleLabel(u), byV = Object.fromEntries(rs.map(r => [r.version, r]));
+    rows.push({ truth, byV });
+    versions.forEach(v => { if (byV[v] && byV[v].candidates[0].label === truth) correct[v]++; });
+  }
+  $("#matrix").innerHTML = matrixHtml(versions, rows, correct, true);
+};
+
+$("#refBtn").onclick = async () => {
+  const label = $("#refLabel").value.trim(), files = $("#refFiles").files;
+  if (!label || !files.length) return toast("label and photos required");
+  const fd = new FormData(); [...files].forEach(f => fd.append("files", f));
+  try { const r = await api(`/api/classes/${encodeURIComponent(label)}/references`, { method: "POST", body: fd });
+        known = r.known_classes; toast(`added ${r.added} photos for ${label}`); loadModel(); }
+  catch (e) { toast(e.message); }
+};
+
+(async () => {
+  try { const m = await api("/api/model"); known = m.known_classes; $("#ver").textContent = `${m.version} · ${m.arch}`; }
+  catch (e) { $("#ver").textContent = e.message; }
+  loadSamples();
+})();
+</script>
+</body>
+</html>

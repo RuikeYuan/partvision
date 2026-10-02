@@ -1,0 +1,8 @@
+{$DOMAIN} {
+	encode gzip
+	# /api/classes/{label}/references takes several 10 MB photos in one request
+	request_body {
+		max_size 100MB
+	}
+	reverse_proxy app:8000
+}

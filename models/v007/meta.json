@@ -1,0 +1,236 @@
+{
+  "version": "v007",
+  "created_at": "2026-10-01T18:02:57.391760+00:00",
+  "classes": [
+    "alternator",
+    "brake_disc",
+    "headlight_left",
+    "headlight_right",
+    "side_mirror_left",
+    "side_mirror_right",
+    "taillight_left",
+    "taillight_right",
+    "wheel_rim"
+  ],
+  "arch": "dinov2_vits14",
+  "image_size": 224,
+  "temperature": 0.05,
+  "unknown_similarity": 0.522352397441864,
+  "ood_k": 5,
+  "train_config": {
+    "arch": "dinov2_vits14",
+    "pretrained": true,
+    "image_size": 224,
+    "batch_size": 32,
+    "epochs": 15,
+    "head_epochs": 5,
+    "lr": 0.001,
+    "backbone_lr_mult": 0.01,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "patience": 4,
+    "val_fraction": 0.15,
+    "seed": 42,
+    "num_workers": 0
+  },
+  "n_train": 737,
+  "n_val": 130,
+  "train_hash": "4d693c6163d7",
+  "holdout_hash": "3823933a1513",
+  "history": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "train_loss": 1.845,
+      "val_loss": 1.1242,
+      "top1": 0.5462,
+      "top3": 0.8923
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "train_loss": 1.2563,
+      "val_loss": 0.8593,
+      "top1": 0.6385,
+      "top3": 0.9615
+    },
+    {
+      "epoch": 3,
+      "stage": "head",
+      "train_loss": 1.1544,
+      "val_loss": 0.8123,
+      "top1": 0.6077,
+      "top3": 0.9692
+    },
+    {
+      "epoch": 4,
+      "stage": "head",
+      "train_loss": 1.0884,
+      "val_loss": 0.792,
+      "top1": 0.6154,
+      "top3": 0.9769
+    },
+    {
+      "epoch": 5,
+      "stage": "head",
+      "train_loss": 1.072,
+      "val_loss": 0.7868,
+      "top1": 0.6077,
+      "top3": 0.9769
+    },
+    {
+      "epoch": 6,
+      "stage": "full",
+      "train_loss": 1.1704,
+      "val_loss": 0.5266,
+      "top1": 0.7538,
+      "top3": 0.9923
+    },
+    {
+      "epoch": 7,
+      "stage": "full",
+      "train_loss": 0.7141,
+      "val_loss": 0.3065,
+      "top1": 0.9231,
+      "top3": 0.9923
+    },
+    {
+      "epoch": 8,
+      "stage": "full",
+      "train_loss": 0.6566,
+      "val_loss": 0.1581,
+      "top1": 0.9692,
+      "top3": 1.0
+    },
+    {
+      "epoch": 9,
+      "stage": "full",
+      "train_loss": 0.5841,
+      "val_loss": 0.1388,
+      "top1": 0.9769,
+      "top3": 1.0
+    },
+    {
+      "epoch": 10,
+      "stage": "full",
+      "train_loss": 0.5541,
+      "val_loss": 0.1328,
+      "top1": 0.9923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 11,
+      "stage": "full",
+      "train_loss": 0.5487,
+      "val_loss": 0.1301,
+      "top1": 1.0,
+      "top3": 1.0
+    },
+    {
+      "epoch": 12,
+      "stage": "full",
+      "train_loss": 0.5464,
+      "val_loss": 0.1329,
+      "top1": 0.9923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 13,
+      "stage": "full",
+      "train_loss": 0.5425,
+      "val_loss": 0.1326,
+      "top1": 0.9923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 14,
+      "stage": "full",
+      "train_loss": 0.54,
+      "val_loss": 0.1263,
+      "top1": 0.9923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 15,
+      "stage": "full",
+      "train_loss": 0.5323,
+      "val_loss": 0.1248,
+      "top1": 0.9923,
+      "top3": 1.0
+    }
+  ],
+  "holdout": {
+    "n": 360,
+    "top1": 0.9861111044883728,
+    "top3": 1.0,
+    "ece": 0.012371034361422062,
+    "ece_uncalibrated": 0.08675514906644821,
+    "per_class": {
+      "alternator": 1.0,
+      "brake_disc": 1.0,
+      "headlight_left": 0.9750000238418579,
+      "headlight_right": 0.949999988079071,
+      "side_mirror_left": 0.949999988079071,
+      "side_mirror_right": 1.0,
+      "taillight_left": 1.0,
+      "taillight_right": 1.0,
+      "wheel_rim": 1.0
+    },
+    "top_confusions": [
+      {
+        "true": "side_mirror_left",
+        "predicted": "side_mirror_right",
+        "count": 2
+      },
+      {
+        "true": "headlight_right",
+        "predicted": "side_mirror_right",
+        "count": 1
+      },
+      {
+        "true": "headlight_left",
+        "predicted": "headlight_right",
+        "count": 1
+      },
+      {
+        "true": "headlight_right",
+        "predicted": "headlight_left",
+        "count": 1
+      }
+    ],
+    "risk_coverage": [
+      {
+        "threshold": 0.0,
+        "coverage": 1.0,
+        "accuracy": 0.9861111044883728
+      },
+      {
+        "threshold": 0.4,
+        "coverage": 1.0,
+        "accuracy": 0.9861111044883728
+      },
+      {
+        "threshold": 0.6,
+        "coverage": 1.0,
+        "accuracy": 0.9861111044883728
+      },
+      {
+        "threshold": 0.8,
+        "coverage": 0.9972222447395325,
+        "accuracy": 0.9888579249382019
+      },
+      {
+        "threshold": 0.9,
+        "coverage": 0.9944444298744202,
+        "accuracy": 0.9916201233863831
+      },
+      {
+        "threshold": 0.95,
+        "coverage": 0.9916666746139526,
+        "accuracy": 0.994397759437561
+      }
+    ]
+  },
+  "notes": "kaggle compare dinov2_vits14@224 --backbone-lr-mult 0.01 --head-epochs 5 --epochs 15",
+  "warm_start_from": null
+}

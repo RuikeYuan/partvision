@@ -1,0 +1,183 @@
+{
+  "version": "v004",
+  "created_at": "2026-10-01T17:36:37.570384+00:00",
+  "classes": [
+    "alternator",
+    "brake_disc",
+    "headlight_left",
+    "headlight_right",
+    "side_mirror_left",
+    "side_mirror_right",
+    "taillight_left",
+    "taillight_right",
+    "wheel_rim"
+  ],
+  "arch": "convnext_tiny",
+  "image_size": 224,
+  "temperature": 0.41193529963493347,
+  "unknown_similarity": 0.5746245980262756,
+  "ood_k": 5,
+  "train_config": {
+    "arch": "convnext_tiny",
+    "pretrained": true,
+    "image_size": 224,
+    "batch_size": 32,
+    "epochs": 12,
+    "head_epochs": 2,
+    "lr": 0.001,
+    "backbone_lr_mult": 0.1,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "patience": 4,
+    "val_fraction": 0.15,
+    "seed": 42,
+    "num_workers": 0
+  },
+  "n_train": 737,
+  "n_val": 130,
+  "train_hash": "4d693c6163d7",
+  "holdout_hash": "3823933a1513",
+  "history": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "train_loss": 1.7852,
+      "val_loss": 1.3722,
+      "top1": 0.5615,
+      "top3": 0.9308
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "train_loss": 1.3559,
+      "val_loss": 1.2458,
+      "top1": 0.5923,
+      "top3": 0.9615
+    },
+    {
+      "epoch": 3,
+      "stage": "full",
+      "train_loss": 0.9895,
+      "val_loss": 0.5333,
+      "top1": 0.7923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 4,
+      "stage": "full",
+      "train_loss": 0.7109,
+      "val_loss": 0.1812,
+      "top1": 0.9615,
+      "top3": 1.0
+    },
+    {
+      "epoch": 5,
+      "stage": "full",
+      "train_loss": 0.5519,
+      "val_loss": 0.1209,
+      "top1": 0.9769,
+      "top3": 1.0
+    },
+    {
+      "epoch": 6,
+      "stage": "full",
+      "train_loss": 0.5398,
+      "val_loss": 0.1112,
+      "top1": 0.9846,
+      "top3": 1.0
+    },
+    {
+      "epoch": 7,
+      "stage": "full",
+      "train_loss": 0.514,
+      "val_loss": 0.1143,
+      "top1": 0.9923,
+      "top3": 1.0
+    },
+    {
+      "epoch": 8,
+      "stage": "full",
+      "train_loss": 0.5062,
+      "val_loss": 0.1186,
+      "top1": 0.9846,
+      "top3": 1.0
+    },
+    {
+      "epoch": 9,
+      "stage": "full",
+      "train_loss": 0.506,
+      "val_loss": 0.1194,
+      "top1": 0.9846,
+      "top3": 1.0
+    },
+    {
+      "epoch": 10,
+      "stage": "full",
+      "train_loss": 0.4999,
+      "val_loss": 0.1143,
+      "top1": 0.9846,
+      "top3": 1.0
+    },
+    {
+      "epoch": 11,
+      "stage": "full",
+      "train_loss": 0.5008,
+      "val_loss": 0.1142,
+      "top1": 0.9846,
+      "top3": 1.0
+    }
+  ],
+  "holdout": {
+    "n": 360,
+    "top1": 1.0,
+    "top3": 1.0,
+    "ece": 0.002258304040879011,
+    "ece_uncalibrated": 0.09483107179403305,
+    "per_class": {
+      "alternator": 1.0,
+      "brake_disc": 1.0,
+      "headlight_left": 1.0,
+      "headlight_right": 1.0,
+      "side_mirror_left": 1.0,
+      "side_mirror_right": 1.0,
+      "taillight_left": 1.0,
+      "taillight_right": 1.0,
+      "wheel_rim": 1.0
+    },
+    "top_confusions": [],
+    "risk_coverage": [
+      {
+        "threshold": 0.0,
+        "coverage": 1.0,
+        "accuracy": 1.0
+      },
+      {
+        "threshold": 0.4,
+        "coverage": 1.0,
+        "accuracy": 1.0
+      },
+      {
+        "threshold": 0.6,
+        "coverage": 1.0,
+        "accuracy": 1.0
+      },
+      {
+        "threshold": 0.8,
+        "coverage": 1.0,
+        "accuracy": 1.0
+      },
+      {
+        "threshold": 0.9,
+        "coverage": 0.9944444298744202,
+        "accuracy": 1.0
+      },
+      {
+        "threshold": 0.95,
+        "coverage": 0.9888888597488403,
+        "accuracy": 1.0
+      }
+    ]
+  },
+  "notes": "kaggle compare convnext_tiny@224",
+  "warm_start_from": null
+}

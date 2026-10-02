@@ -1,0 +1,185 @@
+{
+  "version": "v002",
+  "created_at": "2026-10-01T14:06:28.367208+00:00",
+  "classes": [
+    "alternator",
+    "brake_disc",
+    "headlight_left",
+    "headlight_right",
+    "side_mirror_left",
+    "side_mirror_right",
+    "taillight_left",
+    "taillight_right",
+    "wheel_rim"
+  ],
+  "arch": "resnet18",
+  "image_size": 112,
+  "temperature": 0.5800394415855408,
+  "unknown_similarity": 0.8415518403053284,
+  "ood_k": 5,
+  "train_config": {
+    "arch": "resnet18",
+    "pretrained": false,
+    "image_size": 112,
+    "batch_size": 32,
+    "epochs": 8,
+    "head_epochs": 2,
+    "lr": 0.001,
+    "backbone_lr_mult": 0.1,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "patience": 4,
+    "val_fraction": 0.15,
+    "seed": 42,
+    "num_workers": 0
+  },
+  "n_train": 1043,
+  "n_val": 184,
+  "train_hash": "20fdf35f6b51",
+  "holdout_hash": "3823933a1513",
+  "history": [
+    {
+      "epoch": 1,
+      "stage": "head",
+      "train_loss": 0.7393,
+      "val_loss": 0.2314,
+      "top1": 0.9457,
+      "top3": 1.0
+    },
+    {
+      "epoch": 2,
+      "stage": "head",
+      "train_loss": 0.6924,
+      "val_loss": 0.2211,
+      "top1": 0.962,
+      "top3": 1.0
+    },
+    {
+      "epoch": 3,
+      "stage": "full",
+      "train_loss": 0.7515,
+      "val_loss": 0.2157,
+      "top1": 0.962,
+      "top3": 1.0
+    },
+    {
+      "epoch": 4,
+      "stage": "full",
+      "train_loss": 0.7159,
+      "val_loss": 0.2073,
+      "top1": 0.9674,
+      "top3": 0.9946
+    },
+    {
+      "epoch": 5,
+      "stage": "full",
+      "train_loss": 0.7023,
+      "val_loss": 0.2138,
+      "top1": 0.9511,
+      "top3": 1.0
+    },
+    {
+      "epoch": 6,
+      "stage": "full",
+      "train_loss": 0.6852,
+      "val_loss": 0.2071,
+      "top1": 0.9565,
+      "top3": 1.0
+    },
+    {
+      "epoch": 7,
+      "stage": "full",
+      "train_loss": 0.6981,
+      "val_loss": 0.199,
+      "top1": 0.9674,
+      "top3": 0.9891
+    },
+    {
+      "epoch": 8,
+      "stage": "full",
+      "train_loss": 0.6773,
+      "val_loss": 0.2001,
+      "top1": 0.9674,
+      "top3": 0.9837
+    }
+  ],
+  "holdout": {
+    "n": 360,
+    "top1": 0.9416666626930237,
+    "top3": 0.9861111044883728,
+    "ece": 0.028845349326729774,
+    "ece_uncalibrated": 0.08164650201797485,
+    "per_class": {
+      "alternator": 0.9750000238418579,
+      "brake_disc": 0.925000011920929,
+      "headlight_left": 0.949999988079071,
+      "headlight_right": 0.8999999761581421,
+      "side_mirror_left": 0.949999988079071,
+      "side_mirror_right": 0.925000011920929,
+      "taillight_left": 0.8999999761581421,
+      "taillight_right": 1.0,
+      "wheel_rim": 0.949999988079071
+    },
+    "top_confusions": [
+      {
+        "true": "headlight_right",
+        "predicted": "headlight_left",
+        "count": 3
+      },
+      {
+        "true": "taillight_left",
+        "predicted": "headlight_right",
+        "count": 2
+      },
+      {
+        "true": "side_mirror_right",
+        "predicted": "taillight_right",
+        "count": 1
+      },
+      {
+        "true": "taillight_left",
+        "predicted": "side_mirror_right",
+        "count": 1
+      },
+      {
+        "true": "taillight_left",
+        "predicted": "side_mirror_left",
+        "count": 1
+      }
+    ],
+    "risk_coverage": [
+      {
+        "threshold": 0.0,
+        "coverage": 1.0,
+        "accuracy": 0.9416666626930237
+      },
+      {
+        "threshold": 0.4,
+        "coverage": 0.9888888597488403,
+        "accuracy": 0.9522472023963928
+      },
+      {
+        "threshold": 0.6,
+        "coverage": 0.9555555582046509,
+        "accuracy": 0.9709302186965942
+      },
+      {
+        "threshold": 0.8,
+        "coverage": 0.9111111164093018,
+        "accuracy": 0.9756097793579102
+      },
+      {
+        "threshold": 0.9,
+        "coverage": 0.8833333253860474,
+        "accuracy": 0.9842767119407654
+      },
+      {
+        "threshold": 0.95,
+        "coverage": 0.824999988079071,
+        "accuracy": 0.9898989796638489
+      }
+    ]
+  },
+  "notes": "retrain with 360 feedback images",
+  "warm_start_from": "v001"
+}

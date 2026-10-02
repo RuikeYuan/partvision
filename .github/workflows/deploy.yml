@@ -1,0 +1,50 @@
+# Test on every push / PR; on main, deploy to the Hugging Face Space.
+# Repo settings -> Secrets and variables -> Actions:
+#   secret   HF_TOKEN       HF token with write access to the Space
+#   variable HF_SPACE       e.g. user/partvision
+#   variable HF_MODEL_REPO  e.g. user/partvision-models
+#   variable HF_DATA_REPO   e.g. user/partvision-data   (optional)
+name: test-and-deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install CPU torch and deps
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+      - run: pytest -q
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.HF_SPACE != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "huggingface_hub>=0.25"
+      - name: Build and push Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python scripts/build_hf_space.py --push "${{ vars.HF_SPACE }}" \
+            --model-repo "${{ vars.HF_MODEL_REPO }}" \
+            ${{ vars.HF_DATA_REPO && format('--data-repo "{0}"', vars.HF_DATA_REPO) || '' }}
